@@ -1,13 +1,12 @@
+// src/firebase.js
+
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getAuth } from "firebase/auth";
-import { getDatabase } from 'firebase/database';
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { getAuth, sendEmailVerification } from "firebase/auth";
+import { getDatabase } from "firebase/database";
 
 // Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyCzNmji8CCDPnl1DJxpBCvdgYs_NUmVJUU",
   authDomain: "meal-system-23cfe.firebaseapp.com",
@@ -20,9 +19,22 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-export const app = initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
-const auth = getAuth(app)
-const database = getDatabase(app)
+const auth = getAuth(app);
+const database = getDatabase(app);
 
-export {auth,database}
+// Function to send email verification
+const sendVerificationEmail = (user) => {
+  return sendEmailVerification(user)
+    .then(() => {
+      console.log("Verification email sent!");
+    })
+    .catch((error) => {
+      console.error("Error sending email verification: ", error);
+      throw error; // Re-throw the error to handle it in the calling function
+    });
+};
+
+// Export the necessary Firebase modules and functions
+export {app, auth, database, sendVerificationEmail };

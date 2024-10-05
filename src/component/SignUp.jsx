@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { ref, set } from 'firebase/database'; // For Realtime Database
-// import { doc, setDoc } from 'firebase/firestore'; // For Firestore (optional)
-import { auth, database } from '../Firebase';
+import { ref, set } from 'firebase/database'; 
+import { auth, database, sendVerificationEmail } from '../Firebase'; 
+import { useNavigate } from 'react-router-dom';
 
 export default function SignUp() {
   const [formData, setFormData] = useState({
@@ -13,6 +13,10 @@ export default function SignUp() {
     address: '',
   });
 
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -21,36 +25,49 @@ export default function SignUp() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const { email, password, name, mobile, address } = formData;
 
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
+    try {
+      // Create user with email and password
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
 
-        // Store additional user data in Realtime Database
-        const userRef = ref(database, 'users/' + user.uid);
-        set(userRef, {
-          email,
-          name,
-          mobile,
-          address,
-        }).then(() => {
-          console.log('User data stored successfully');
-        }).catch((error) => {
-          console.error('Error storing user data:', error);
-        });
-      })
-      .catch((error) => {
-        console.error('Sign-up error:', error.code, error.message);
+      // Send email verification
+      const emailVerification = await sendVerificationEmail(user);
+
+      // Optionally, store additional user data in Realtime Database
+      const userRef = ref(database, 'users/' + user.uid);
+      const userData = await set(userRef, {
+        email,
+        name,
+        mobile,
+        address,
+        role: "admin",
+        status: false,
       });
+      
+      //redirect to email verfication page
+      if(user && userRef){
+        navigate("/emailverification")
+      }
+
+
+    } catch (error) {
+      console.error('Sign-up error:', error.code, error.message);
+      setError(error.message);
+      setSuccess(''); // Clear any previous success messages
+    }
   };
 
   return (
     <div className="max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg">
       <h1 className="text-2xl font-bold mb-6 text-center">Sign Up</h1>
+      {error && <p className="mb-4 text-red-500">{error}</p>}
+      {success && <p className="mb-4 text-green-500">{success}</p>}
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Email Field */}
         <div className="flex flex-col">
           <label htmlFor="email" className="mb-2 text-sm font-medium text-gray-700">Email:</label>
           <input
@@ -63,6 +80,8 @@ export default function SignUp() {
             required
           />
         </div>
+
+        {/* Password Field */}
         <div className="flex flex-col">
           <label htmlFor="password" className="mb-2 text-sm font-medium text-gray-700">Password:</label>
           <input
@@ -75,6 +94,8 @@ export default function SignUp() {
             required
           />
         </div>
+
+        {/* Name Field */}
         <div className="flex flex-col">
           <label htmlFor="name" className="mb-2 text-sm font-medium text-gray-700">Name:</label>
           <input
@@ -87,6 +108,8 @@ export default function SignUp() {
             required
           />
         </div>
+
+        {/* Mobile Field */}
         <div className="flex flex-col">
           <label htmlFor="mobile" className="mb-2 text-sm font-medium text-gray-700">Mobile:</label>
           <input
@@ -98,6 +121,8 @@ export default function SignUp() {
             className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
+
+        {/* Address Field */}
         <div className="flex flex-col">
           <label htmlFor="address" className="mb-2 text-sm font-medium text-gray-700">Address:</label>
           <input
@@ -109,6 +134,8 @@ export default function SignUp() {
             className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
+
+        {/* Submit Button */}
         <button
           type="submit"
           className="w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded-md shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
