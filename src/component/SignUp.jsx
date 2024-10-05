@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { ref, set } from 'firebase/database'; 
-import { auth, database, sendVerificationEmail } from '../Firebase'; 
+import { auth, database } from '../Firebase'; 
 import { useNavigate } from 'react-router-dom';
 
 export default function SignUp() {
@@ -37,7 +37,7 @@ export default function SignUp() {
       // Send email verification
       const emailVerification = await sendVerificationEmail(user);
 
-      // Optionally, store additional user data in Realtime Database
+      
       const userRef = ref(database, 'users/' + user.uid);
       const userData = await set(userRef, {
         email,
@@ -57,9 +57,21 @@ export default function SignUp() {
     } catch (error) {
       console.error('Sign-up error:', error.code, error.message);
       setError(error.message);
-      setSuccess(''); // Clear any previous success messages
+      setSuccess(''); 
     }
   };
+
+  // Function to send email verification
+const sendVerificationEmail = (user) => {
+  return sendEmailVerification(user)
+    .then(() => {
+      console.log("Verification email sent!");
+    })
+    .catch((error) => {
+      console.error("Error sending email verification: ", error);
+      throw error; 
+    });
+};
 
   return (
     <div className="max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg">
@@ -67,7 +79,7 @@ export default function SignUp() {
       {error && <p className="mb-4 text-red-500">{error}</p>}
       {success && <p className="mb-4 text-green-500">{success}</p>}
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Email Field */}
+        
         <div className="flex flex-col">
           <label htmlFor="email" className="mb-2 text-sm font-medium text-gray-700">Email:</label>
           <input
@@ -81,7 +93,7 @@ export default function SignUp() {
           />
         </div>
 
-        {/* Password Field */}
+        
         <div className="flex flex-col">
           <label htmlFor="password" className="mb-2 text-sm font-medium text-gray-700">Password:</label>
           <input
@@ -95,7 +107,7 @@ export default function SignUp() {
           />
         </div>
 
-        {/* Name Field */}
+        
         <div className="flex flex-col">
           <label htmlFor="name" className="mb-2 text-sm font-medium text-gray-700">Name:</label>
           <input
@@ -109,7 +121,7 @@ export default function SignUp() {
           />
         </div>
 
-        {/* Mobile Field */}
+        
         <div className="flex flex-col">
           <label htmlFor="mobile" className="mb-2 text-sm font-medium text-gray-700">Mobile:</label>
           <input
@@ -122,7 +134,7 @@ export default function SignUp() {
           />
         </div>
 
-        {/* Address Field */}
+        
         <div className="flex flex-col">
           <label htmlFor="address" className="mb-2 text-sm font-medium text-gray-700">Address:</label>
           <input
@@ -135,7 +147,7 @@ export default function SignUp() {
           />
         </div>
 
-        {/* Submit Button */}
+        
         <button
           type="submit"
           className="w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded-md shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"

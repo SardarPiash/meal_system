@@ -1,5 +1,5 @@
 import { onAuthStateChanged } from 'firebase/auth'
-import { auth, database, sendVerificationEmail } from '../Firebase'; 
+import { auth, database } from '../Firebase'; 
 import React, { useEffect, useState } from 'react'
 import { ref, update } from 'firebase/database';
 import { useNavigate } from 'react-router-dom';
