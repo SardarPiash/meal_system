@@ -15,9 +15,6 @@ const Login = () => {
       const loginfo = await signInWithEmailAndPassword(auth, email, password);
       // Redirect or do something after successful login
       if(loginfo){
-        sessionStorage.setItem('AuthToken',loginfo.user.accessToken)
-        sessionStorage.setItem('Uid',loginfo.user.uid)
-        console.log("sigh in")
         navigate('/dashboard')
       }
      
