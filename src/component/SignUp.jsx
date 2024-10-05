@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { ref, set } from 'firebase/database'; 
-import { auth, database } from '../Firebase'; 
+import { auth, database, sendVerificationEmail } from '../Firebase'; 
 import { useNavigate } from 'react-router-dom';
 
 export default function SignUp() {
@@ -60,18 +60,6 @@ export default function SignUp() {
       setSuccess(''); 
     }
   };
-
-  // Function to send email verification
-const sendVerificationEmail = (user) => {
-  return sendEmailVerification(user)
-    .then(() => {
-      console.log("Verification email sent!");
-    })
-    .catch((error) => {
-      console.error("Error sending email verification: ", error);
-      throw error; 
-    });
-};
 
   return (
     <div className="max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg">

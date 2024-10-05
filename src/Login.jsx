@@ -19,7 +19,6 @@ const Login = () => {
         sessionStorage.setItem('Uid',loginfo.user.uid)
         console.log("sigh in")
         navigate('/dashboard')
-        
       }
      
     } catch (err) {

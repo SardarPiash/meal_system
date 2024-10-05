@@ -17,7 +17,21 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 const auth = getAuth(app);
 const database = getDatabase(app);
 
-export {app, auth, database };
+// Function to send email verification
+const sendVerificationEmail = (user) => {
+  return sendEmailVerification(user)
+    .then(() => {
+      console.log("Verification email sent!");
+    })
+    .catch((error) => {
+      console.error("Error sending email verification: ", error);
+      throw error; 
+    });
+};
+
+
+export {app, auth, database, sendVerificationEmail };
