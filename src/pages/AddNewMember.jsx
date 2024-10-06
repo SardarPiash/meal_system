@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import { CgAdd } from "react-icons/cg";
 import { database } from "../Firebase";
 import { v4 as uuidv4 } from "uuid";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import emailjs from "emailjs-com";
 
 export default function AddNewMember() {
@@ -31,7 +33,7 @@ export default function AddNewMember() {
       } else if (newMemberEmail[i]) {
         for (var j = 0; j < inputNumber; j++) {
           if (i !== j && newMemberEmail[i] === newMemberEmail[j]) {
-            errorMsg[i] = "You are using the same email multipule times";
+            errorMsg[i] = "You are using the same email multiple times";
           }
         }
       }
@@ -42,7 +44,7 @@ export default function AddNewMember() {
     if (errorMsg.length > 0) {
       return;
     } else {
-      ///store email to database for creating an ID
+      // Store email to database for creating an ID
       for (var i = 0; i < inputNumber; i++) {
         let uuid = uuidv4();
         id[i] = uuid;
@@ -55,9 +57,33 @@ export default function AddNewMember() {
           await push(dbRef, data);
         });
 
-        //sending mail
+        // Sending mail
         for (var i = 0; i < inputNumber; i++) {
-          sendEmail(newMemberEmail[i], id[i]);
+          const successEmail = await sendEmail(newMemberEmail[i], id[i]);
+
+          if (successEmail) {
+            toast.success(`Invitation link send to ${newMemberEmail[i]}.`, {
+              position: "bottom-right",
+              autoClose: 8000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+            });
+          }else{
+            toast.error(`Something error for ${newMemberEmail[i]},try again.`, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+              });
+          }
         }
 
         console.log("Data submitted:", formdata);
@@ -134,15 +160,17 @@ export default function AddNewMember() {
           </form>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 }
 
 //email sending function
-function sendEmail(emailAddress, id) {
+async function sendEmail(emailAddress, id) {
   const templateID = "template_wgyiqjp";
   const serviceID = "service_6z5iddb";
   const userID = "NdZhtGzEjoeArejfY";
+
   //email data
   const templateParams = {
     url: "dddddddddddd",
@@ -150,12 +178,10 @@ function sendEmail(emailAddress, id) {
     uid: id,
   };
 
-  emailjs.send(serviceID, templateID, templateParams, userID).then(
-    (response) => {
-      console.log("email send");
-    },
-    (error) => {
-      console.log("not send");
-    }
-  );
+  try {
+    await emailjs.send(serviceID, templateID, templateParams, userID);
+    return true; 
+  } catch (error) {
+    return false; 
+  }
 }
