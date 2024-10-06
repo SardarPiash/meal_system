@@ -1,7 +1,7 @@
 import { push, ref } from "firebase/database";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CgAdd } from "react-icons/cg";
-import { database } from "../Firebase";
+import { auth, database } from "../Firebase";
 import { v4 as uuidv4 } from "uuid";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { ToastContainer, toast } from "react-toastify";
@@ -12,6 +12,16 @@ export default function AddNewMember() {
   const [newMemberEmail, setNewMemberEmail] = useState([]);
   const [inputNumber, setInputNumber] = useState(1);
   const [inputError, setInputError] = useState([]);
+  const [userUID,setUserUID] = useState(null);
+
+  useEffect(()=>{
+    auth.onAuthStateChanged((user) => {
+        //console.log(user.uid)
+        setUserUID(user.uid)
+      })
+  },[userUID])
+ 
+
 
   //handle inputs
   function handleInput(e, index) {
@@ -47,9 +57,9 @@ export default function AddNewMember() {
     } else {
       // Store email to database for creating an ID
       for (var i = 0; i < inputNumber; i++) {
-        let uuid = uuidv4();
-        id[i] = uuid;
-        formdata[i] = { uid: id, email: newMemberEmail[i] };
+        let uuidt = uuidv4();
+        id[i] = uuidt;
+        formdata[i] = { uid: uuidt, email: newMemberEmail[i],adminUID:userUID };
       }
       try {
         const dbRef = ref(database, "invitation/");
