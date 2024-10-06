@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { CgAdd } from "react-icons/cg";
 import { database } from "../Firebase";
 import { v4 as uuidv4 } from "uuid";
+import { RiDeleteBin6Line } from "react-icons/ri";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import emailjs from "emailjs-com";
@@ -58,7 +59,7 @@ export default function AddNewMember() {
         });
 
         // Sending mail
-        for (var i = 0; i < inputNumber; i++) {
+        for (var i = 0; i < newMemberEmail.length; i++) {
           const successEmail = await sendEmail(newMemberEmail[i], id[i]);
 
           if (successEmail) {
@@ -72,17 +73,23 @@ export default function AddNewMember() {
               progress: undefined,
               theme: "colored",
             });
-          }else{
+          } else {
             toast.error(`Something error for ${newMemberEmail[i]},try again.`, {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "colored",
-              });
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+            });
+          }
+
+          //clear the state
+          if (i === inputNumber - 1) {
+            setNewMemberEmail([]);
+            setInputNumber(1);
           }
         }
 
@@ -92,6 +99,14 @@ export default function AddNewMember() {
       }
     }
   };
+
+  //remove input field
+  function removeInput(index) {
+    const emailAddress = newMemberEmail.filter((data, i) => i !== index);
+    console.log(emailAddress);
+    setNewMemberEmail(emailAddress);
+    setInputNumber((prevInputNumber) => prevInputNumber - 1);
+  }
 
   return (
     <div className="md:w-full md:h-full">
@@ -126,6 +141,18 @@ export default function AddNewMember() {
                         />
                       </span>
                     </div>
+                    {index < inputNumber - 1 ? (
+                      <div className=" md:ml-4 ">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            removeInput(index);
+                          }}
+                        >
+                          <RiDeleteBin6Line className="md:w-6 md:h-7 text-red-400" />
+                        </button>
+                      </div>
+                    ) : null}
                     <div className="ml-2">
                       {index === inputNumber - 1 ? (
                         <div className="flex justify-end">
@@ -180,8 +207,8 @@ async function sendEmail(emailAddress, id) {
 
   try {
     await emailjs.send(serviceID, templateID, templateParams, userID);
-    return true; 
+    return true;
   } catch (error) {
-    return false; 
+    return false;
   }
 }
