@@ -50,7 +50,7 @@ export default function SignUp() {
       
       //redirect to email verfication page
       if(user && userRef){
-        navigate("/emailverification")
+        navigate("/login")
       }
 
 
