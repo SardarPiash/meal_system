@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { ref, set } from 'firebase/database'; 
 import { auth, database, sendVerificationEmail } from '../Firebase'; 
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function SignUp() {
   const [formData, setFormData] = useState({
@@ -167,6 +167,9 @@ export default function SignUp() {
           Sign Up
         </button>
       </form>
+      <div>
+        Alreary have account? <Link to='/login'>Login</Link>
+      </div>
     </div>
   );
 }
