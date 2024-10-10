@@ -12,6 +12,7 @@ export default function SignUp() {
     mobile: '',
     address: '',
   });
+  const [formErrors, setFormErrors] = useState({});
 
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -25,8 +26,37 @@ export default function SignUp() {
     }));
   };
 
+  const validateForm = () => {
+    let errors = {};
+    if (!formData.email) {
+      errors.email = 'Email is required';
+    }
+    if (!formData.password) {
+      errors.password = 'Password is required';
+    }
+    if (!formData.name) {
+      errors.name = 'Name is required';
+    }
+    if (!formData.mobile) {
+      errors.mobile = 'Mobile number is required';
+    }
+    if (!formData.address) {
+      errors.address = 'Address is required';
+    }
+
+    setFormErrors(errors);
+
+    
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      return; 
+    }
+
     const { email, password, name, mobile, address } = formData;
 
     try {
@@ -37,9 +67,9 @@ export default function SignUp() {
       // Send email verification
       const emailVerification = await sendVerificationEmail(user);
 
-      
+      // Store user data in Firebase database
       const userRef = ref(database, 'users/' + user.uid);
-      const userData = await set(userRef, {
+      await set(userRef, {
         email,
         name,
         mobile,
@@ -47,17 +77,14 @@ export default function SignUp() {
         role: "admin",
         status: false,
       });
-      
-      //redirect to email verfication page
-      if(user && userRef){
-        navigate("/login")
-      }
 
+      // Redirect to login page after successful signup
+      navigate("/login");
 
     } catch (error) {
       console.error('Sign-up error:', error.code, error.message);
       setError(error.message);
-      setSuccess(''); 
+      setSuccess('');
     }
   };
 
@@ -67,7 +94,7 @@ export default function SignUp() {
       {error && <p className="mb-4 text-red-500">{error}</p>}
       {success && <p className="mb-4 text-green-500">{success}</p>}
       <form onSubmit={handleSubmit} className="space-y-4">
-        
+
         <div className="flex flex-col">
           <label htmlFor="email" className="mb-2 text-sm font-medium text-gray-700">Email:</label>
           <input
@@ -76,12 +103,11 @@ export default function SignUp() {
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
+            className={`px-4 py-2 border ${formErrors.email ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500`}
           />
+          {formErrors.email && <p className="text-red-500 text-sm">{formErrors.email}</p>}
         </div>
 
-        
         <div className="flex flex-col">
           <label htmlFor="password" className="mb-2 text-sm font-medium text-gray-700">Password:</label>
           <input
@@ -90,12 +116,11 @@ export default function SignUp() {
             name="password"
             value={formData.password}
             onChange={handleChange}
-            className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
+            className={`px-4 py-2 border ${formErrors.password ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500`}
           />
+          {formErrors.password && <p className="text-red-500 text-sm">{formErrors.password}</p>}
         </div>
 
-        
         <div className="flex flex-col">
           <label htmlFor="name" className="mb-2 text-sm font-medium text-gray-700">Name:</label>
           <input
@@ -104,12 +129,11 @@ export default function SignUp() {
             name="name"
             value={formData.name}
             onChange={handleChange}
-            className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
+            className={`px-4 py-2 border ${formErrors.name ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500`}
           />
+          {formErrors.name && <p className="text-red-500 text-sm">{formErrors.name}</p>}
         </div>
 
-        
         <div className="flex flex-col">
           <label htmlFor="mobile" className="mb-2 text-sm font-medium text-gray-700">Mobile:</label>
           <input
@@ -118,11 +142,11 @@ export default function SignUp() {
             name="mobile"
             value={formData.mobile}
             onChange={handleChange}
-            className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={`px-4 py-2 border ${formErrors.mobile ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500`}
           />
+          {formErrors.mobile && <p className="text-red-500 text-sm">{formErrors.mobile}</p>}
         </div>
 
-        
         <div className="flex flex-col">
           <label htmlFor="address" className="mb-2 text-sm font-medium text-gray-700">Address:</label>
           <input
@@ -131,11 +155,11 @@ export default function SignUp() {
             name="address"
             value={formData.address}
             onChange={handleChange}
-            className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={`px-4 py-2 border ${formErrors.address ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500`}
           />
+          {formErrors.address && <p className="text-red-500 text-sm">{formErrors.address}</p>}
         </div>
 
-        
         <button
           type="submit"
           className="w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded-md shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
