@@ -167,8 +167,11 @@ export default function SignUp() {
           Sign Up
         </button>
       </form>
-      <div>
-        Alreary have account? <Link to='/login'>Login</Link>
+      <div className="mt-4 text-center">
+        Already have an account?{' '}
+        <Link to="/" className="text-blue-500 hover:underline">
+          Login
+        </Link>
       </div>
     </div>
   );

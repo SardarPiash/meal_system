@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from './Firebase';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -63,7 +63,14 @@ const Login = () => {
             Login
           </button>
         </form>
+        <div className="mt-4 text-center">
+        Haven't any account?{' '}
+        <Link to="/signup" className="text-blue-500 hover:underline">
+          Sign up
+        </Link>
       </div>
+      </div>
+      
     </div>
   );
 };
