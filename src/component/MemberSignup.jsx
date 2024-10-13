@@ -70,8 +70,7 @@ export default function MemberSignup() {
       return;
     }
 
-    // Proceed with form submission or API call if form is valid
-    console.log("Form submitted", formData);
+    
   };
 
   return (
