@@ -24,7 +24,6 @@ const SavePersonalInfo = () => {
       console.log("Data saved successfully!");
       // Reset the input fields
       setName("");
-      //setE("");
     })
     .catch((error) => {
       console.error("Error saving data: ", error);
