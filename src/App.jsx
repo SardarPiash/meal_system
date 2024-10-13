@@ -6,6 +6,7 @@ import Login from "./Login";
 import SavePersonalInfo from "./SavePersonalInfo";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AddNewMember from "./pages/AddNewMember";
+import MemberSignup from "./component/MemberSignup";
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/emailverification" element={<EmailVerification />} />
           <Route path="/add-new-member" element={<AddNewMember />} />
+          <Route path="/new-member-signup" element={<MemberSignup />} />
 
         </Routes>
     </BrowserRouter>

@@ -23,17 +23,17 @@ export default function Dashboard() {
               setUserData(snapshot.val());
             } else {
               console.error('No user data found');
-              navigate('/login');
+              navigate('/');
             }
             setLoading(false);
           })
           .catch((error) => {
             console.error('Error fetching user data:', error);
-            navigate('/login');
+            navigate('/');
             setLoading(false);
           });
       } else {
-        navigate('/login');
+        navigate('/');
         setLoading(false);
       }
     });
